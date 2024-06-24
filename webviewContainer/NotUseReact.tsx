@@ -44,7 +44,9 @@ export default function NotUseReact() {
       const existingScript = document.createElement('script');
       existingScript.type = 'module';
       existingScript.crossOrigin = 'anonymous';
-      existingScript.src = './assets/my-app.cjs.js';
+      existingScript.src = "https://webview-inject-test.vercel.app/my-app.cjs.js";
+
+      alert('existingScript:', existingScript.src);
 
       document.head.appendChild(existingScript);
     })();
@@ -70,7 +72,7 @@ export default function NotUseReact() {
       <WebView
         ref={webViewRef}
         source={{
-          uri: 'https://webview-inject-test-1ohq4iu4n-minjes-projects.vercel.app',
+          uri: 'https://webview-inject-test.vercel.app',
         }}
         style={{flex: 1}}
         onLoadStart={() => setLoadStartTime(Date.now())}
