@@ -44,7 +44,7 @@ export default function NotUseReact() {
       const existingScript = document.createElement('script');
       existingScript.type = 'module';
       existingScript.crossOrigin = 'anonymous';
-      existingScript.src = './assets/index-D5LRRKNE.js';
+      existingScript.src = './assets/my-app.cjs.js';
 
       document.head.appendChild(existingScript);
     })();
