@@ -4,19 +4,23 @@ import WebView from 'react-native-webview';
 
 export default function NotUseReact() {
   const webViewRef = useRef<WebView>(null);
-  const [fileContent, setFileContent] = useState('');
+  const [reactContent, setReactContent] = useState('');
+  const [reactDOMContent, setReactDOMContent] = useState('');
 
   useEffect(() => {
     const readFile = async () => {
       try {
         // 파일 경로 설정
-        const filePath = RNFS.MainBundlePath + '/react-chunk.js';
+        const react = RNFS.MainBundlePath + '/react-prod.js';
+        const reactDOM = RNFS.MainBundlePath + '/react-dom-prod.js';
 
         // 파일 읽기
-        const content = await RNFS.readFile(filePath, 'utf8');
+        const react_content = await RNFS.readFile(react, 'utf8');
+        const reactDOM_content = await RNFS.readFile(reactDOM, 'utf8');
 
         // 파일 내용 상태에 저장
-        setFileContent(content);
+        setReactContent(react_content);
+        setReactDOMContent(reactDOM_content);
       } catch (err) {
         console.error('Error reading file:', err);
       }
@@ -25,14 +29,22 @@ export default function NotUseReact() {
     readFile();
   }, []);
 
-  console.log(fileContent);
-
   const injectedJavaScript = `
-    // document.addEventListener('DOMContentLoaded', function() {
-    //   alert('Page has fully loaded');
-    // });
-    true; // Note: this is required, or you'll sometimes get silent failures
-  `;
+  (function() {
+      // 기존 스크립트를 다시 실행
+      const existingScript = document.createElement('script');
+      existingScript.type = 'module';
+      existingScript.crossOrigin = 'anonymous';
+      existingScript.src = './assets/index-kztrNjId.js';
+      document.head.appendChild(existingScript);
+      
+      existingScript.onload = () => {
+        alert('Existing script reloaded successfully');
+      };
+    })();
+    true;
+    `;
+  console.log(injectedJavaScript);
 
   return (
     <WebView
@@ -42,7 +54,7 @@ export default function NotUseReact() {
       onLoadEnd={() => {
         if (webViewRef.current) {
           webViewRef.current.injectJavaScript(
-            fileContent + ' ' + injectedJavaScript,
+            reactContent + '\n' + reactDOMContent + '\n' + injectedJavaScript,
           );
         }
       }}
