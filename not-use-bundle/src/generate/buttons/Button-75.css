@@ -1,0 +1,9 @@
+.button-75 {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #93935b;
+  color: #4ecfd3;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

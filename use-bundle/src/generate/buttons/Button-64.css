@@ -1,0 +1,9 @@
+.button-64 {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #6c1b59;
+  color: #6b660e;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

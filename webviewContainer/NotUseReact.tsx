@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {Text, View} from 'react-native';
 import RNFS from 'react-native-fs';
 import WebView from 'react-native-webview';
 
@@ -6,6 +7,8 @@ export default function NotUseReact() {
   const webViewRef = useRef<WebView>(null);
   const [reactContent, setReactContent] = useState('');
   const [reactDOMContent, setReactDOMContent] = useState('');
+  const [loadStartTime, setLoadStartTime] = useState<number | null>(null);
+  const [loadEndTime, setLoadEndTime] = useState<number | null>(null);
 
   useEffect(() => {
     const readFile = async () => {
@@ -30,34 +33,50 @@ export default function NotUseReact() {
   }, []);
 
   const injectedJavaScript = `
-  (function() {
-      // 기존 스크립트를 다시 실행
+    (function() {
+      document.addEventListener('DOMContentLoaded', function() {
+        window.ReactNativeWebView.postMessage('LOADED');
+      });
+
       const existingScript = document.createElement('script');
       existingScript.type = 'module';
       existingScript.crossOrigin = 'anonymous';
-      existingScript.src = './assets/index-kztrNjId.js';
+      existingScript.src = './assets/index-DJ7zXdZm.js';
       document.head.appendChild(existingScript);
-      
-      existingScript.onload = () => {
-        alert('Existing script reloaded successfully');
-      };
     })();
     true;
-    `;
-  console.log(injectedJavaScript);
+  `;
+
+  const handleWebViewMessage = (event: any) => {
+    const {data} = event.nativeEvent;
+    if (data === 'LOADED') {
+      const loadEnd = Date.now();
+      setLoadEndTime(loadEnd);
+    }
+  };
+
+  const loadTime =
+    loadStartTime && loadEndTime ? loadEndTime - loadStartTime : null;
 
   return (
-    <WebView
-      ref={webViewRef}
-      source={{uri: 'http://127.0.0.1:5500/not-use-bundle/dist/index.html'}}
-      style={{flex: 1}}
-      onLoadEnd={() => {
-        if (webViewRef.current) {
-          webViewRef.current.injectJavaScript(
-            reactContent + '\n' + reactDOMContent + '\n' + injectedJavaScript,
-          );
-        }
-      }}
-    />
+    <View style={{flex: 1}}>
+      <Text>
+        WebView Load Time: {loadTime !== null ? `${loadTime} ms` : 'Loading...'}
+      </Text>
+      <WebView
+        ref={webViewRef}
+        source={{uri: 'http://127.0.0.1:5500/not-use-bundle/dist/index.html'}}
+        style={{flex: 1}}
+        onLoadStart={() => setLoadStartTime(Date.now())}
+        onLoadEnd={() => {
+          if (webViewRef.current) {
+            webViewRef.current.injectJavaScript(
+              reactContent + '\n' + reactDOMContent + '\n' + injectedJavaScript,
+            );
+          }
+        }}
+        onMessage={handleWebViewMessage}
+      />
+    </View>
   );
 }
