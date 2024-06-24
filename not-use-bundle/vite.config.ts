@@ -1,4 +1,5 @@
 import react from "@vitejs/plugin-react";
+import path from "path";
 import { defineConfig } from "vite";
 import externalGlobals from "vite-plugin-external-globals";
 
@@ -24,15 +25,32 @@ export default defineConfig({
     }),
   ],
   build: {
+    lib: {
+      entry: path.resolve(__dirname, "src/App.tsx"),
+      name: "MyApp",
+      formats: ["cjs"],
+      fileName: (format) => `my-app.${format}.js`,
+    },
     rollupOptions: {
+      input: {
+        index: path.resolve(__dirname, "index.html"),
+      },
+      external: ["react", "react-dom"],
       output: {
-        format: "cjs",
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
         },
       },
-      external: ["react", "react-dom"],
+    },
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+      },
+      output: {
+        comments: false,
+      },
     },
   },
 });

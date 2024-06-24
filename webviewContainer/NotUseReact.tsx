@@ -11,11 +11,14 @@ export default function NotUseReact() {
   const [loadEndTime, setLoadEndTime] = useState<number | null>(null);
 
   useEffect(() => {
+    console.log('RNFS.MainBundlePath:', RNFS.MainBundlePath);
     const readFile = async () => {
       try {
         // 파일 경로 설정
-        const react = RNFS.MainBundlePath + '/react-prod.js';
-        const reactDOM = RNFS.MainBundlePath + '/react-dom-prod.js';
+        // const react = RNFS.MainBundlePath + '/react-prod.js';
+        // const reactDOM = RNFS.MainBundlePath + '/react-dom-prod.js';
+        const react = RNFS.MainBundlePath + '/react.prod.min.js';
+        const reactDOM = RNFS.MainBundlePath + '/react-dom.prod.min.js';
 
         // 파일 읽기
         const react_content = await RNFS.readFile(react, 'utf8');
@@ -41,7 +44,8 @@ export default function NotUseReact() {
       const existingScript = document.createElement('script');
       existingScript.type = 'module';
       existingScript.crossOrigin = 'anonymous';
-      existingScript.src = './assets/index-DJ7zXdZm.js';
+      existingScript.src = './assets/index-D5LRRKNE.js';
+
       document.head.appendChild(existingScript);
     })();
     true;
@@ -65,7 +69,7 @@ export default function NotUseReact() {
       </Text>
       <WebView
         ref={webViewRef}
-        source={{uri: 'http://127.0.0.1:5500/not-use-bundle/dist/index.html'}}
+        source={{uri: 'http://localhost:4174'}}
         style={{flex: 1}}
         onLoadStart={() => setLoadStartTime(Date.now())}
         onLoadEnd={() => {

@@ -33,7 +33,9 @@ export default function UseReact() {
       </Text>
       <WebView
         ref={webViewRef}
-        source={{uri: 'http://localhost:5173'}}
+        source={{
+          uri: 'https://webview-inject-test-fsw7.vercel.app/',
+        }}
         style={{flex: 1}}
         onLoadStart={() => setLoadStartTime(Date.now())}
         onMessage={handleWebViewMessage}
