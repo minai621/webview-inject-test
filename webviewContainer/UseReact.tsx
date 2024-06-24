@@ -5,7 +5,7 @@ import {WebView} from 'react-native-webview';
 export default function UseReact() {
   const [loadStartTime, setLoadStartTime] = useState<number>(0);
   const [loadEndTime, setLoadEndTime] = useState<number>(0);
-  const webViewRef = useRef(null);
+  const webViewRef = useRef<WebView>(null);
 
   const handleWebViewMessage = (event: any) => {
     const {data} = event.nativeEvent;
@@ -21,6 +21,8 @@ export default function UseReact() {
         window.ReactNativeWebView.postMessage('LOADED');
       });
     })();
+
+    true;
   `;
 
   const loadTime =
@@ -38,8 +40,12 @@ export default function UseReact() {
         }}
         style={{flex: 1}}
         onLoadStart={() => setLoadStartTime(Date.now())}
+        onLoadEnd={() => {
+          if (webViewRef.current) {
+            webViewRef.current.injectJavaScript(injectedJS);
+          }
+        }}
         onMessage={handleWebViewMessage}
-        injectedJavaScript={injectedJS}
       />
     </View>
   );

@@ -11,7 +11,6 @@ export default function NotUseReact() {
   const [loadEndTime, setLoadEndTime] = useState<number | null>(null);
 
   useEffect(() => {
-    console.log('RNFS.MainBundlePath:', RNFS.MainBundlePath);
     const readFile = async () => {
       try {
         // 파일 경로 설정
@@ -44,9 +43,7 @@ export default function NotUseReact() {
       const existingScript = document.createElement('script');
       existingScript.type = 'module';
       existingScript.crossOrigin = 'anonymous';
-      existingScript.src = "https://webview-inject-test.vercel.app/my-app.cjs.js";
-
-      alert('existingScript:', existingScript.src);
+      existingScript.src = "./my-app.cjs.js";
 
       document.head.appendChild(existingScript);
     })();
