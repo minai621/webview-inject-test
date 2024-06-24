@@ -69,7 +69,9 @@ export default function NotUseReact() {
       </Text>
       <WebView
         ref={webViewRef}
-        source={{uri: 'http://localhost:4174'}}
+        source={{
+          uri: 'https://webview-inject-test-1ohq4iu4n-minjes-projects.vercel.app',
+        }}
         style={{flex: 1}}
         onLoadStart={() => setLoadStartTime(Date.now())}
         onLoadEnd={() => {
