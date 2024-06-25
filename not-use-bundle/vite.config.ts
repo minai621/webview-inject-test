@@ -46,14 +46,14 @@ export default defineConfig({
         },
       },
     },
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true,
-      },
-      output: {
-        comments: false,
-      },
-    },
+    // minify: "terser",
+    // terserOptions: {
+    //   compress: {
+    //     drop_console: true,
+    //   },
+    //   output: {
+    //     comments: false,
+    //   },
+    // },
   },
 });
