@@ -44,9 +44,9 @@ export default function NotUseReact() {
       
       document.head.appendChild(existingScript);
       
-      document.addEventListener('DOMContentLoaded', function() {
-        window.ReactNativeWebView.postMessage('LOADED');
-      });
+      // document.addEventListener('DOMContentLoaded', function() {
+      //   window.ReactNativeWebView.postMessage('LOADED');
+      // });
     })();
     true;
   `;

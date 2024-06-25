@@ -33,11 +33,16 @@ pnpm create vite use-bundle --template react-ts
 
 해당 application에는 100개의 버튼과 각 버튼마다 5개의 랜덤 변수가 존재한다.
 
+<img src="https://github.com/minai621/webview-inject-test/blob/main/assets/buttons.png"  width="200" height="400"/>
+
 ### 리액트를 포함하지 않고 번들링된 application
 
 vite config을 수정하여 번들링이 될 때 react와 react-dom을 제외하고 번들링하도록 설정했다.
 
 react가 module이 아닌 window 객체에 주입되기 때문에 ([cdn의 코드를 사용](https://ko.legacy.reactjs.org/docs/cdn-links.html)) 변환과정에서 외부 의존성을 제외하고 번들링할 수 있게 설정하였다.
+
+![의존정 목록](./assets/dependencies.png)
+현재는 vite template 으로만 설정돼있기 때문에, react와 react-dom만을 주입 대상으로 정하였다. 추후 react-native와 함께 사용하는 공통 모듈이 있을 경우 해당 모듈도 주입 대상으로 설정할 수 있다. (예를 들어, `@tanstack/react-query`)
 
 ```ts
 import react from "@vitejs/plugin-react";
@@ -111,6 +116,27 @@ export default defineConfig({
 </Tab.Navigator>
 ```
 
+각 스크린에서는 로딩이 완료되면 `window.ReactNativeWebView.postMessage('LOADED')`를 호출하여 로딩 시간을 측정하였다.
+
+```tsx
+// react apps
+useEffect(() => {
+  // 렌더링 완료 후 React Native에 메시지 전달
+  if (window.ReactNativeWebView) {
+    window.ReactNativeWebView.postMessage("LOADED");
+  }
+}, []);
+
+// react-native app
+const handleWebViewMessage = (event: any) => {
+  const { data } = event.nativeEvent;
+  if (data === "LOADED") {
+    const loadEnd = Date.now();
+    setLoadEndTime(loadEnd);
+  }
+};
+```
+
 #### USE-REACT
 
 리액트를 포함하여 번들링된 application을 vercel을 통해 배포해두고 해당 url을 웹뷰로 렌더링하였다.
@@ -123,6 +149,8 @@ export default defineConfig({
   onLoadStart={() => setLoadStartTime(Date.now())}
 />
 ```
+
+따라서, 웹뷰에서 로딩이 시작되면 `onLoadStart` 이벤트가 발생하고, 앱에서 로딩이 완료되면 `onLoadEnd` 이벤트가 발생하는 시간으로 렌더링 시간을 측정하였다.
 
 #### NOT-USE-REACT
 
@@ -227,12 +255,14 @@ inject를 하는 경우에는 dns에 캐시가 되어있는지 여부와 상관�
 
 첫 로딩에는 앱 로딩으로 인해 시간이 소요되기 때문에 두 번째 로딩부터 측정하였다.
 
-<video src="./assets/test-simul.mp4" width="320" height="240" controls></video>
+  <!-- <video src="./assets/test-simul.mp4" width="320" height="240" controls></video> -->
+
+![시뮬레이터](./assets/simulator.gif)
 
 ## 결론
 
-react를 번들로 주입하는 것으로 로딩을 빠르게 할 수 있다는 것을 알 수 있습니다.
-특히나 네트워크 속도가 느릴 수록 inject하는 것이 효과적임을 알 수 있습니다.
+react를 번들로 주입하는 것으로 로딩을 빠르게 할 수 있다는 것을 알 수 있다.
+특히나 네트워크 속도가 느릴 수록 inject하는 것이 효과적임을 알 수 있다.
 
-하지만, react를 번들로 주입하는 것은 번들 사이즈를 늘리는 단점이 있습니다.
-그리고 네트워크가 충분히 빠른 환경에서는 성능 차이가 미미한 반면에 (100ms 이하) 오버 엔지니어링을 하게 되고 웹의 구성에도 영향을 미친다는 단점이 있습니다.
+하지만, react를 번들로 주입하는 것은 번들 사이즈를 늘리는 단점이 있다.
+그리고 네트워크가 충분히 빠른 환경에서는 성능 차이가 미미한 반면에 (100ms 이하) 오버 엔지니어링을 하게 되고 웹의 구성에도 영향을 미친다는 단점이 생긴다.

@@ -17,9 +17,9 @@ export default function UseReact() {
 
   const injectedJS = `
     (function() {
-      document.addEventListener('DOMContentLoaded', function() {
-        window.ReactNativeWebView.postMessage('LOADED');ㅕ
-      });
+      // document.addEventListener('DOMContentLoaded', function() {
+      //   window.ReactNativeWebView.postMessage('LOADED');ㅕ
+      // });
     })();
 
     true;
