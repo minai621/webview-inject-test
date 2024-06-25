@@ -36,16 +36,17 @@ export default function NotUseReact() {
 
   const injectedJavaScript = `
     (function() {
-      document.addEventListener('DOMContentLoaded', function() {
-        window.ReactNativeWebView.postMessage('LOADED');
-      });
-
+      
       const existingScript = document.createElement('script');
       existingScript.type = 'module';
       existingScript.crossOrigin = 'anonymous';
       existingScript.src = "./my-app.cjs.js";
-
+      
       document.head.appendChild(existingScript);
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        window.ReactNativeWebView.postMessage('LOADED');
+      });
     })();
     true;
   `;
@@ -70,9 +71,13 @@ export default function NotUseReact() {
         ref={webViewRef}
         source={{
           uri: 'https://webview-inject-test.vercel.app',
+          headers: {'Cache-Control': 'no-store'},
         }}
         style={{flex: 1}}
-        onLoadStart={() => setLoadStartTime(Date.now())}
+        incognito={true}
+        onLoadStart={() => {
+          setLoadStartTime(Date.now());
+        }}
         onLoadEnd={() => {
           if (webViewRef.current) {
             webViewRef.current.injectJavaScript(

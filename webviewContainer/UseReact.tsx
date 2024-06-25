@@ -18,7 +18,7 @@ export default function UseReact() {
   const injectedJS = `
     (function() {
       document.addEventListener('DOMContentLoaded', function() {
-        window.ReactNativeWebView.postMessage('LOADED');
+        window.ReactNativeWebView.postMessage('LOADED');ㅕ
       });
     })();
 
@@ -37,7 +37,9 @@ export default function UseReact() {
         ref={webViewRef}
         source={{
           uri: 'https://webview-inject-test-fsw7.vercel.app/',
+          headers: {'Cache-Control': 'no-store'},
         }}
+        incognito={true}
         style={{flex: 1}}
         onLoadStart={() => setLoadStartTime(Date.now())}
         onLoadEnd={() => {
