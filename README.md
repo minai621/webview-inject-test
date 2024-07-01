@@ -18,32 +18,31 @@
 ## 리액트 번들을 제외하고 빌드하기
 
 리액트로 개발된 어플리케이션은 리액트 객체가 필요해요.
-내가 작성한 컴포넌트는 리액트 객체를 필요로 하지만 꼭 함께 번들링할 필요는 없어요.
+내가 작성한 컴포넌트는 리액트 객체를 필요로 하지만, 항상 함께 번들링할 필요는 없어요.
 
 `vite`와 같은 `번들러`를 사용한다면 번들링된 리액트를 제외하고 빌드할 수 있어요.
 
 ### 리액트를 포함하여 번들링된 application
 
-속도 비교를 위해서 온전히 리액트를 포함하여 번들링된 application을 만들었다.
+속도 비교를 위해서 온전히 리액트를 포함하여 번들링된 application을 만들었어요.
 
 ```bash
 pnpm create vite use-bundle --template react-ts
 ```
 
-해당 application에는 100개의 버튼과 각 버튼마다 5개의 랜덤 변수가 존재한다.
+해당 application에는 100개의 버튼과 각 버튼마다 5개의 랜덤 변수가 존재해요.
+또한, react를 함께 번들링할 것이기 때문에 다른 세팅을 해주지 않아도 돼요.
 
 <img src="https://github.com/minai621/webview-inject-test/blob/main/assets/buttons.png"  width="200" height="400"/>
 
 ### 리액트를 포함하지 않고 번들링된 application
 
-vite config을 수정하여 번들링이 될 때 react와 react-dom을 제외하고 번들링하도록 설정했다.
+`vite config`을 수정하여 번들링이 될 때 `react와 react-dom을 제외하고 번들링하도록 설정했어요.
 
-react가 module이 아닌 window 객체에 주입되기 때문에 ([cdn의 코드를 사용](https://ko.legacy.reactjs.org/docs/cdn-links.html)) 변환과정에서 외부 의존성을 제외하고 번들링할 수 있게 설정하였다.
+react가 `module`이 아닌 `window 객체`에 주입되기 때문에 ([성능을 테스트 하기 위해 가장 간단한 번들 코드인 cdn의 코드를 사용했어요](https://ko.legacy.reactjs.org/docs/cdn-links.html)) 변환과정에서 외부 의존성을 제외하고 번들링할 수 있게 설정해야 해요.
 
-![의존정 목록](./assets/dependencies.png)
-
-현재는 vite template 으로만 설정돼있기 때문에, react와 react-dom만을 주입 대상으로 정하였다. 추후 react-native와 함께 사용하는 공통 모듈이 있을 경우 해당 모듈도 주입 대상으로 설정할 수 있다. (예를 들어, `@tanstack/react-query`)
-기존에는 리액트 모듈을 import하여 사용했지만, 모듈에 함께 번들링하지 않으니 window 객체를 참조할 수 있도록 변경해야 해요.
+현재는 `vite template` 으로만 설정돼있기 때문에, react와 react-dom만을 주입 대상으로 정했어요. 추후 react-native와 함께 사용하는 공통 모듈이 있을 경우 해당 모듈도 주입 대상으로 설정할 수 있어요. (예를 들어, `@tanstack/react-query`)
+기존에는 리액트 모듈을 import하여 사용했지만, 모듈에 함께 번들링하지 않으니 `window 객체`를 참조할 수 있도록 변경해야 해요.
 
 ```ts
 // vite.config.ts
@@ -77,7 +76,7 @@ export default defineConfig({
 
 ![alt text](./assets/size-bundle.png)
 
-번들된 js 파일을 확인해보면, 리액트 모듈이 번들링되지 않아 용량이 많이 줄은 것을 확인할 수 있어요.
+번들된 js 파일을 확인해보면, 리액트 모듈이 번들링되지 않아 용량이 많이 줄어들은 것을 확인할 수 있어요.
 이제는 네이티브 앱에서 리액트를 주입하여 동작시켜야 해요.
 
 ## 리액트 주입하기
@@ -86,7 +85,7 @@ export default defineConfig({
 >
 > 실제로 사용하려면 metro bundler를 통해 **jsbundle**이라는 네이티브 앱에서 사용하는 확장자로 모듈을 분리하여 빌드하고, **main.jsbundle**에서 사용할 수 있도록 해야 해요.
 
-react를 주입하기 위해 파일을 읽어와 네이티브 앱에서 주입할 수 있도록 해요.
+react를 주입하기 위해 파일을 읽어 네이티브 앱에서 주입할 수 있도록 해야 해요.
 
 파일을 읽는 것은 `react-native-fs`의 도움을 받아 구현할 수 있어요.
 
@@ -245,13 +244,13 @@ inject를 하는 경우에는 dns에 캐시가 되어있는지 여부와 상관�
 
 - **과한 엔지니어링**
   네이티브 앱에서 js 모듈들은 Hermes를 통해 런타임에서 실행돼요. 이때, Metro 번들러를 통해 번들된 js를 네이티브에서 로드하며 실행하는데, Android는 index.android.bundle, iOS는 main.jsBundle과 같은 파일로 생성돼요.
-  모든 번들 파일을 주입하지 않기 때문에
+  모든 번들 파일을 주입할 필요가 없기 때문에 번들 파일을 분리하고, 네이티브 앱에서는 번들 파일을 합쳐서 사용해야 해요.
 
   1. 번들 파일을 분리한다.
   2. 네이티브 앱에서는 번들된 파일을 합쳐서 사용한다.
   3. 웹에서는 필요한 번들을 주입받는다.
 
-     위와 같은 복잡한 과정을 거쳐야 하는데 이미 웹과 앱의 영역에서 수정을 해야 하는 문제가 생긴다.
+     위와 같은 복잡한 과정을 거쳐야 하는데 이미 웹과 앱의 영역에서 수정을 해야 하는 문제가 생겨요.
 
 - **웹에서의 의존성**
   만일 웹에서도 서비스를 지원하고 있다면 리액트와 같은 모듈들을 현재 os에 따라 cdn으로 다운로드 해야 해요. 이는 버전이나 최적화에 어려움이 생겨요.
